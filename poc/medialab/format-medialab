@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#
+# Splits the units file into a CSV of properties and a CSV of id mappings to the OTAs found in the file
+# Formats the reservation data as a CSV
+#
+
+# property
+echo "Processing units file into property list"
+echo "property_id,address,latitude,longitude,bedrooms,bathrooms,guests" > medialab-property.csv
+jq -r '.[] | [ .propertyID, .address, .latitude, .longitude, .bedrooms, .bathrooms, .guests ] | @csv' units.json >> medialab-property.csv
+
+# property/portal map
+echo "Generating OTA id map"
+echo "property_id,portal,portal_id" > medialab-portal-map.csv
+jq -r '.[] | . as $baserec | .portals | keys[] | [ $baserec["propertyID"], ., $baserec["portals"][.] ] | @csv' units.json >> medialab-portal-map.csv
+
+# reservations
+echo "Processing reservations"
+echo "property_id,type,added_date,start_date,end_date,length_of_stay,portal,reservation_id,currency,nightly_rate" > medialab-reservations.csv
+jq -r '.[] | [.propertyID, .type, .addedDate, .startDate, .endDate, .lengthOfStay, .portal, .reservationID, .currency, .nightlyRate] | @csv' reservations.json >> medialab-reservations.csv
+
+
+#########
+# testing
+
+#jq '.[] | {propertyID: .propertyID, address: .address, lat: .latitude, lon: .longitude} as $names | .portals | to_entries | .[] | $names + .'
+
+#jq '.[] | [.propertyID, .address, .latitude, .longitude] as $baserec | .portals | to_entries | .[] | $baserec + .'
+
+#jq '.[] | . as $baserec | .portals | keys[] | [$baserec | .propertyID, .address, .latitude, .longitude, .bedrooms, .bathrooms] + [., $baserec["portals"][.]]'
