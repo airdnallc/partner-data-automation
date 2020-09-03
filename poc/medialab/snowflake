@@ -1,0 +1,95 @@
+---
+--- medialab_property
+---
+
+create or replace table medialab_property (
+  property_id int,
+  address string,
+  latitude double,
+  longitude double,
+  bedrooms int,
+  bathrooms int,
+  guests int
+)
+stage_file_format = (TYPE = 'CSV' field_delimiter = ',' skip_header = 1)
+
+-- if loading directly from S3 to the table
+copy into partner_data.public.medialab_property
+from 's3://airdna-partner-data/snowflake/medialab/'
+storage_integration = snowflake_s3
+file_format = (type = 'CSV' field_delimiter = ',' field_optionally_enclosed_by = '"' skip_header = 1)
+pattern='.*medialab-property.csv'
+
+-- if loading to a stage first
+create or replace stage partner_data.public.medialab_property
+url = 's3://airdna-partner-data/snowflake/medialab/'
+storage_integration = snowflake_s3
+file_format = (type = 'CSV' field_delimiter = ',' field_optionally_enclosed_by = '"' skip_header = 1)
+
+copy into partner_data.public.medialab_property 
+from @partner_data.public.medialab_property 
+pattern='.*medialab-property.csv'
+
+---
+--- medialab_portal_map
+---
+
+create or replace table medialab_portal_map (
+  property_id int,
+  portal string,
+  portal_id string
+)
+stage_file_format = (TYPE = 'CSV' field_delimiter = ',' skip_header = 1)
+
+-- if loading directly from S3 to the table
+copy into partner_data.public.medialab_portal_map
+from 's3://airdna-partner-data/snowflake/medialab/'
+storage_integration = snowflake_s3
+file_format = (type = 'CSV' field_delimiter = ',' field_optionally_enclosed_by = '"' skip_header = 1)
+pattern='.*medialab-portal-map.csv'
+
+-- if loading to a stage first
+create or replace stage partner_data.public.medialab_portal_map
+url = 's3://airdna-partner-data/snowflake/medialab/'
+storage_integration = snowflake_s3
+file_format = (type = 'CSV' field_delimiter = ',' field_optionally_enclosed_by = '"' skip_header = 1)
+
+copy into partner_data.public.medialab_portal_map 
+from @partner_data.public.medialab_portal_map
+pattern='.*medialab-portal-map.csv'
+
+---
+--- medialab_reservation
+---
+
+create or replace table medialab_reservation (
+  property_id int,
+  type string,
+  added_date timestamp_ntz,
+  start_date timestamp_ntz,
+  end_date timestamp_ntz,
+  length_of_stay int,
+  portal string,
+  reservation_id string,
+  currency string,
+  nightly_rate double
+)
+stage_file_format = (TYPE = 'CSV' field_delimiter = ',' skip_header = 1)
+
+-- if loading directly from S3 to the table
+copy into partner_data.public.medialab_reservation
+from 's3://airdna-partner-data/snowflake/medialab/'
+storage_integration = snowflake_s3
+file_format = (type = 'CSV' field_delimiter = ',' field_optionally_enclosed_by = '"' skip_header = 1)
+pattern='.*medialab-reservations.csv'
+
+-- if loading to a stage first
+create or replace stage partner_data.public.medialab_reservation
+url = 's3://airdna-partner-data/snowflake/medialab/'
+storage_integration = snowflake_s3
+file_format = (type = 'CSV' field_delimiter = ',' field_optionally_enclosed_by = '"' skip_header = 1)
+
+copy into partner_data.public.medialab_reservation 
+from @partner_data.public.medialab_reservation 
+pattern='.*medialab-reservations.csv'
+
